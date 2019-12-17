@@ -1,9 +1,12 @@
+import SelectorFactoryHelper.Companion.tag
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.function.Executable
 
-@DisplayName("Base Selector tests")
+
+@DisplayName("Selector")
 class SelectorTest: BaseSelectorTest() {
 
     @Test
@@ -11,8 +14,21 @@ class SelectorTest: BaseSelectorTest() {
         checkThat(Selector(), "//*")
     }
 
+    @Test
+    fun `clone should copy an object`() {
+        var s = tag("A")
+        var s2 = s.clone()
+
+        s.setTag("B")
+
+        assertAll (
+            Executable { assertEquals("B", s.getTag()) },
+            Executable { assertEquals("A", s2.getTag()) }
+        )
+    }
+
     @Nested
-    @DisplayName("Selector base properties tests")
+    @DisplayName("Selector base properties")
     inner class SelectorSettersTest {
 
         @Test

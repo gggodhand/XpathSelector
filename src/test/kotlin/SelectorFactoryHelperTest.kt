@@ -1,10 +1,10 @@
-import SelectorFactoryHelper.Companion.tagSelector
+import SelectorFactoryHelper.Companion.tag
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 
-import org.junit.jupiter.api.Assertions.*
-
+@DisplayName("Selector Factory")
 internal class SelectorFactoryHelperTest : BaseSelectorTest() {
 
     @Test
-    fun `Tag Selector should create Selector with tag`() = checkThat(tagSelector("A"), "//A")
+    fun `Tag Selector should create Selector with tag`() = checkThat(tag("A"), "//A")
 }
