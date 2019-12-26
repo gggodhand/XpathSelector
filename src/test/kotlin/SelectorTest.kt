@@ -56,4 +56,37 @@ class SelectorTest: BaseSelectorTest() {
                 "/A")
         }
     }
+
+    @Nested
+    @DisplayName("Axis")
+    inner class SelectorAxisTests {
+
+        @Test
+        fun `following method should add following axis`() {
+            checkThat(
+                tag("A").following(),
+                "//following::A")
+        }
+
+        @Test
+        fun `followingSibling method should add following axis`() {
+            checkThat(
+                tag("A").followingSibling(),
+                "//following-sibling::A")
+        }
+
+        @Test
+        fun `preceding method should add following axis`() {
+            checkThat(
+                tag("A").preceding(),
+                "//preceding::A")
+        }
+
+        @Test
+        fun `precedingSibling method should add following axis`() {
+            checkThat(
+                tag("A").precedingSibling(),
+                "//preceding-sibling::A")
+        }
+    }
 }
