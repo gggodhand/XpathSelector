@@ -3,6 +3,7 @@ open class Selector(
     protected var prefix: String = "//",
     protected var tag: String = "*",
     protected var axe: String = "",
+
     protected var attributes: SelectorAttributeChain = SelectorAttributeChain()) {
 
     open fun prefix(value: String): Selector {
