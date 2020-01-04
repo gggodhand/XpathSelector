@@ -1,3 +1,5 @@
+package selector
+
 operator fun Selector.plus(selector: Selector): GroupSelector {
     if (this is GroupSelector) {
         addChild(selector)
@@ -29,4 +31,22 @@ operator fun Selector.div(selector: Selector): ComposeSelector {
 
     SelectorMethodsHelper.prevComposeSelector = ComposeSelector(this).add(selector)
     return SelectorMethodsHelper.prevComposeSelector!!
+}
+
+operator fun <T: Selector>T.get(position: Int): T {
+    val res = clone()
+    res.attributes.add(KVSelectorAttribute.Position(position))
+    return res as T
+}
+
+operator fun <T: Selector>T.get(position: String): T {
+    val res = clone()
+    res.attributes.add(KVSelectorAttribute.Position(position))
+    return res as T
+}
+
+operator fun <T: Selector>T.get(arg: SelectorAttribute): T {
+    val res = clone()
+    res.attributes.add(arg)
+    return res as T
 }

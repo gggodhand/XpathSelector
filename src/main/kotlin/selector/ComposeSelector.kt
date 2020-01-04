@@ -1,3 +1,5 @@
+package selector
+
 class ComposeSelector(
     var selectors: ArrayList<Selector> = ArrayList()): Selector() {
 

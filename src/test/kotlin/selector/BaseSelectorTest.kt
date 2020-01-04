@@ -1,3 +1,5 @@
+package selector
+
 import org.junit.jupiter.api.Assertions.*
 
 open class BaseSelectorTest {

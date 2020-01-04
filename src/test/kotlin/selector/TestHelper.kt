@@ -1,3 +1,5 @@
+package selector
+
 import java.lang.reflect.Field
 
 fun Selector.setTag(tag: String) = getField("tag").set(this, tag)

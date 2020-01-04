@@ -1,3 +1,6 @@
+package selector
+
+
 class GroupSelector(
     var selectors: ArrayList<Selector> = ArrayList()): Selector() {
 
@@ -55,14 +58,14 @@ class GroupSelector(
         result = 31 * result + selectors.hashCode()
         return result
     }
+}
 
-    override fun prefix(value: String): Selector {
-        var res = clone()
+fun <T: GroupSelector>T.prefix(value: String): T {
+    var res = clone()
 
-        if (res.selectors.size > 0) {
-            res.selectors[0] = res.selectors[0].prefix(value)
-        }
-
-        return res
+    if (res.selectors.size > 0) {
+        res.selectors[0] = res.selectors[0].prefix(value)
     }
+
+    return res as T
 }

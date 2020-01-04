@@ -1,10 +1,12 @@
-import SelectorFactoryHelper.Companion.tag
+package selector
+
+import selector.SelectorFactoryHelper.Companion.tag
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.function.Executable
-
+import selector.KVSelectorAttribute.Companion.KV
 
 @DisplayName("Selector")
 class SelectorTest: BaseSelectorTest() {
@@ -87,6 +89,39 @@ class SelectorTest: BaseSelectorTest() {
             checkThat(
                 tag("A").precedingSibling(),
                 "//preceding-sibling::A")
+        }
+    }
+
+    @Nested
+    @DisplayName("Attributes")
+    inner class SelectorAttributeTests {
+
+        @Test
+        fun `array index operator with Int arg should set selector's position`() {
+            checkThat(
+                tag("A")[2],
+                "//A[position()=2]")
+        }
+
+        @Test
+        fun `array index operator with String arg should set selector's position`() {
+            checkThat(
+                tag("A")["last()"],
+                "//A[position()=last()]")
+        }
+
+        @Test
+        fun `array index operator with Int and KV args should set selector's position and add additional parameter`() {
+            checkThat(
+                tag("A")[2][KVSelectorAttribute("@label", "'asd'")],
+                "//A[position()=2 and @label='asd']")
+        }
+
+        @Test
+        fun `array index operator with Int and two KV args should set selector's position and add additional parameters`() {
+            checkThat(
+                tag("A")[2][KV("@label", "'asd'")][KV("text()", "'text'")],
+                "//A[position()=2 and @label='asd' and text()='text']")
         }
     }
 }
