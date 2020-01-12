@@ -32,7 +32,14 @@ open class SelectorAttribute(
     open fun build(): String {
        return when {
             strVal.isNotEmpty() -> strVal
-            sel != null -> sel!!.toXpath()
+            sel != null -> {
+                val sel = sel!!
+                if (sel.prefix != "-") {
+                    sel.prefix("").toXpath()
+                } else {
+                    sel.prefix(".//").toXpath()
+                }
+            }
             else -> ""
         }
     }
@@ -49,6 +56,22 @@ open class SelectorAttribute(
         res.add(this)
         right.oper = "or"
         res.add(right)
+        return res
+    }
+
+    infix fun and(right: Selector): SelectorAttributeChain {
+        var res = SelectorAttributeChain()
+        res.add(this)
+        res.add(SelectorAttribute(sel = right.clone()))
+        return res
+    }
+
+    infix fun or(right: Selector): SelectorAttributeChain {
+        var res = SelectorAttributeChain()
+        res.add(this)
+        val attr = SelectorAttribute(sel = right.clone())
+        attr.oper = "or"
+        res.add(attr)
         return res
     }
 }

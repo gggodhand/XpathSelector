@@ -50,3 +50,9 @@ operator fun <T: Selector>T.get(arg: SelectorAttribute): T {
     res.attributes.add(arg)
     return res as T
 }
+
+operator fun <T: Selector>T.get(selector: Selector): T {
+    val res = clone()
+    res.attributes.add(SelectorAttribute(sel = selector))
+    return res as T
+}

@@ -29,6 +29,18 @@ class SelectorTest: BaseSelectorTest() {
         )
     }
 
+    @Test
+    fun `parent(0) should not add parents to xpath`() =
+        checkThat(Selector().parent(0), "//*")
+
+    @Test
+    fun `parent(1) should add parents to xpath`() =
+        checkThat(Selector().parent(1), "//*/..")
+
+    @Test
+    fun `parent(2) should add parents to xpath`() =
+        checkThat(Selector().parent(2), "//*/../..")
+
     @Nested
     @DisplayName("Selector base properties")
     inner class SelectorSettersTest {
@@ -121,6 +133,13 @@ class SelectorTest: BaseSelectorTest() {
         fun `array index operator with Int and two KV args should set selector's position and add additional parameters`() {
             checkThat(
                 tag("A")[2][KV("@label", "'asd'")][KV("text()", "'text'")],
+                "//A[position()=2 and @label='asd' and text()='text']")
+        }
+
+        @Test
+        fun `array index operator with selector`() {
+            checkThat(
+                tag("A")[tag("B")],
                 "//A[position()=2 and @label='asd' and text()='text']")
         }
     }

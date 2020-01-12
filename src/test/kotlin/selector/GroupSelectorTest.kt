@@ -25,6 +25,7 @@ internal class GroupSelectorTest : BaseSelectorTest() {
     @Test
     fun `plus operator can be used multiple times`()
             = checkThat(tag("A") + tag("B") + tag("C") + tag("D"), "//A/B/C/D")
+
     @Test
     fun `plus and times operators can be combined with each other`()
             = checkThat(tag("A") * tag("B") + tag("C"), "//A//B/C")

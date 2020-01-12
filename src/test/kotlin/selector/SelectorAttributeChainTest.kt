@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.Assertions.*
 import selector.KVSelectorAttribute.Companion.Arg
+import selector.SelectorFactoryHelper.Companion.tag
 
 internal class SelectorAttributeChainTest : BaseSelectorTest() {
 
@@ -36,6 +37,15 @@ internal class SelectorAttributeChainTest : BaseSelectorTest() {
         = checkAttr("[@label='text' and @desc='desc' or @value='val']",
         Arg("label", "text") and Arg("desc", "desc") or Arg("value", "val"))
 
+    @Test
+    fun `two args with tag and selector should create a chain`()
+        = checkAttr("[@label='text' and A]",
+        Arg("label", "text") and tag("A"))
+
+    @Test
+    fun `two args with tag and selector with - should create a chain`()
+        = checkAttr("[@label='text' and .//A]",
+        Arg("label", "text") and -tag("A"))
 
     private fun checkAttr(expected: String, actual: SelectorAttributeChain) {
         assertEquals(expected, actual.build())

@@ -4,12 +4,19 @@ open class Selector(
     internal var prefix: String = "//",
     internal var tag: String = "*",
     internal var axe: String = "",
+    internal var parent: Int = 0,
 
     internal var attributes: SelectorAttributeChain = SelectorAttributeChain()
 ) {
 
     open fun toXpath(): String {
-        return "$prefix$axe$tag${attributes.build()}"
+        var p = ""
+        if (parent > 0) {
+            for (i in 1..parent) {
+                p += "/.."
+            }
+        }
+        return "$prefix$axe$tag$p${attributes.build()}"
     }
 
     open fun clone(): Selector = copyTo(Selector())
@@ -17,6 +24,7 @@ open class Selector(
     open fun copyTo(sel: Selector): Selector {
         sel.prefix = prefix
         sel.tag = tag
+        sel.parent = parent
         sel.attributes = attributes.clone()
 
         return sel
@@ -46,15 +54,21 @@ fun <T: Selector>T.prefix(value: String): T {
     return res as T
 }
 
+operator fun <T: Selector>T.unaryMinus(): T {
+    val res = clone()
+    res.prefix = "-"
+    return res as T
+}
+
 fun <T: Selector>T.tag(value: String): T {
     val res = clone()
     res.tag = value
     return res as T
 }
 
-fun <T: Selector>T.addAttr(attr: SelectorAttribute): T {
+fun <T: Selector>T.parent(value: Int): T {
     val res = clone()
-    res.attributes.add(attr)
+    res.parent = value
     return res as T
 }
 

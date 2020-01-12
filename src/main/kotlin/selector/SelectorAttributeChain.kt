@@ -42,5 +42,18 @@ class SelectorAttributeChain(
         this.add(right)
         return this
     }
+
+    infix fun and(right: Selector): SelectorAttributeChain {
+        var attr = SelectorAttribute(sel = right)
+        this.add(attr)
+        return this
+    }
+
+    infix fun or(right: Selector): SelectorAttributeChain {
+        var attr = SelectorAttribute(sel = right)
+        attr.oper = "or"
+        this.add(attr)
+        return this
+    }
 }
 
