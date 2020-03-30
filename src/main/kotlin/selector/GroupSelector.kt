@@ -13,7 +13,7 @@ class GroupSelector(
     }
 
     fun copyTo(sel: GroupSelector): GroupSelector {
-        var res = super.copyTo(sel) as GroupSelector
+        var res = (sel as Selector).copyTo(sel) as GroupSelector
 
         var newSelectors = ArrayList<Selector>()
         newSelectors.addAll(selectors)

@@ -1,5 +1,7 @@
 package selector
 
+import kotlin.reflect.KClass
+
 operator fun Selector.plus(selector: Selector): GroupSelector {
     if (this is GroupSelector) {
         addChild(selector)
@@ -33,10 +35,27 @@ operator fun Selector.div(selector: Selector): ComposeSelector {
     return SelectorMethodsHelper.prevComposeSelector!!
 }
 
-operator fun <T: Selector>T.get(position: Int): T {
-    val res = clone()
+
+/* Convenience wrapper that allows you to call getValue<Type>() instead of of getValue(Type::class) */
+inline fun <reified T: Any> getValue() : T? = getValue(T::class)
+
+/* We have no way to guarantee that an empty constructor exists, so must return T? instead of T */
+fun <T: Any> getValue(clazz: KClass<T>) : T? {
+    clazz.constructors.forEach { con ->
+        if (con.parameters.isEmpty()) {
+            return con.call()
+        }
+    }
+    return null
+}
+
+inline operator fun <reified T: Selector>T.get(position: Int): T {
+//    val res: T = getValue()!!
+//    copyTo(res)
+    var res: T = this.javaClass.newInstance()
+  //  val res = this.clone()
     res.attributes.add(KVSelectorAttribute.Position(position))
-    return res as T
+    return res
 }
 
 operator fun <T: Selector>T.get(position: String): T {

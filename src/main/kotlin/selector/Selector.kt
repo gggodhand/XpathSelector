@@ -1,13 +1,23 @@
 package selector
 
 open class Selector(
+    internal var base: Selector? = null,
+
+    internal var name: String = "",
     internal var prefix: String = "//",
     internal var tag: String = "*",
     internal var axe: String = "",
     internal var parent: Int = 0,
 
-    internal var attributes: SelectorAttributeChain = SelectorAttributeChain()
+     var attributes: SelectorAttributeChain = SelectorAttributeChain()
 ) {
+    constructor(sel: Selector) : this() {
+        sel.copyTo(this)
+    }
+
+    open fun clone(): Selector {
+        return copyTo(Selector())
+    }
 
     open fun toXpath(): String {
         var p = ""
@@ -16,19 +26,11 @@ open class Selector(
                 p += "/.."
             }
         }
-        return "$prefix$axe$tag$p${attributes.build()}"
+
+        val baseXpath = base?.toXpath() ?: ""
+        return "$baseXpath$prefix$axe$tag$p${attributes.build()}"
     }
 
-    open fun clone(): Selector = copyTo(Selector())
-
-    open fun copyTo(sel: Selector): Selector {
-        sel.prefix = prefix
-        sel.tag = tag
-        sel.parent = parent
-        sel.attributes = attributes.clone()
-
-        return sel
-    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -46,6 +48,20 @@ open class Selector(
         return result
     }
 
+}
+
+fun <T: Selector>T.setBase(value: Selector): T {
+    this.base = value
+    return this
+}
+
+fun <T: Selector>T.copyTo(sel: T): T {
+    sel.prefix = prefix
+    sel.tag = tag
+    sel.parent = parent
+    sel.attributes = attributes.clone()
+
+    return sel
 }
 
 fun <T: Selector>T.prefix(value: String): T {

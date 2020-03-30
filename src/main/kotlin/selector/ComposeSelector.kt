@@ -12,7 +12,7 @@ class ComposeSelector(
     }
 
     fun copyTo(sel: ComposeSelector): ComposeSelector {
-        var res = super.copyTo(sel) as ComposeSelector
+        var res = (sel as Selector).copyTo(sel) as ComposeSelector
 
         var newSelectors = ArrayList<Selector>()
         newSelectors.addAll(selectors)
