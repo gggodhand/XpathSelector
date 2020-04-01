@@ -1,11 +1,19 @@
 package selector
 
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import selector.page.PageTest
 import selector.page.test.reflectionhelper.PageTestCls
+import org.junit.jupiter.api.function.Executable
+import selector.page.test.reflectionhelper.PageTest
 
 internal class ReflectionHelperTest: BaseSelectorTest() {
+
+    @BeforeEach
+    fun before() {
+        ReflectionHelper.scanObject(PageTest)
+    }
 
     @Test
     fun `isObject should return true for objects`() {
@@ -18,11 +26,75 @@ internal class ReflectionHelperTest: BaseSelectorTest() {
     }
 
     @Test
+    fun `getNewRootObject should return new instance of root object for inner class`() {
+
+        assertTrue(
+            ReflectionHelper.getNewRootObject(PageTest.Item) is PageTestCls.ItemCls)
+    }
+
+    @Test
+    fun `getNewRootObject should return new instance of inner object`() {
+        val obj = ReflectionHelper.getNewRootObject(PageTest.Item)
+
+        assertAll (
+            Executable {
+                assertTrue(obj is PageTestCls.ItemCls)
+            },
+
+            Executable {
+                assertTrue(obj !== PageTest.Item)
+            }
+        )
+    }
+
+    @Test
+    fun `getNewRootObject should return new instance of root objec 2t`() {
+        val obj = ReflectionHelper.getNewRootObject(PageTest.Menu[2])
+
+        assertAll (
+            Executable {
+                assertTrue(obj is PageTestCls.MenuCls)
+            },
+
+            Executable {
+                assertTrue(obj !== PageTest)
+            }
+        )
+    }
+
+    @Test
+    fun `setCloned method should set all selectors to the cloned state`() {
+        val cloned = PageTest.Item.clone().base as PageTestCls
+
+
+        assertAll ("cloned members should be CLONED",
+            Executable {
+                assertTrue(cloned.state == SelectorState.CLONED, "cloned.state")
+            },
+            Executable {
+                assertTrue(cloned.s1.state == SelectorState.CLONED, "cloned.s1.state")
+            },
+            Executable {
+                assertTrue(cloned.Item.state == SelectorState.CLONED, "cloned.Item.state")
+            },
+            Executable {
+                assertTrue(cloned.Item.s2.state == SelectorState.CLONED, "cloned.Item.s2.state")
+            },
+            Executable {
+                assertTrue(cloned.Menu.MenuItem.state == SelectorState.CLONED, "cloned.Menu.MenuItem.state")
+            },
+            Executable {
+                assertTrue(cloned.Menu.MenuItem.itemMenu.state == SelectorState.CLONED, "cloned.Menu.MenuItem.itemMenu.state")
+            }
+        )
+    }
+
+    @Test
     fun `getObjects should return list of objects`() {
         assertEquals(
             ReflectionHelper.getObjects("selector.page.test.reflectionhelper"),
             arrayListOf(
-                selector.page.test.reflectionhelper.PageTest::class.java,
+                PageTest::class.java,
                 selector.page.test.reflectionhelper.PageTest2::class.java)
         )
     }
@@ -30,11 +102,11 @@ internal class ReflectionHelperTest: BaseSelectorTest() {
     @Test
     fun `getClassSelectors should return a list of selector members for the base object`() {
         assertEquals(
-            ReflectionHelper.getClassSelectors(selector.page.test.reflectionhelper.PageTest),
+            ReflectionHelper.getClassSelectors(PageTest),
             arrayListOf(
-                selector.page.test.reflectionhelper.PageTest.s1,
-                selector.page.test.reflectionhelper.PageTest.Item,
-                selector.page.test.reflectionhelper.PageTest.Menu
+                PageTest.s1,
+                PageTest.Item,
+                PageTest.Menu
             )
         )
     }
@@ -42,22 +114,44 @@ internal class ReflectionHelperTest: BaseSelectorTest() {
     @Test
     fun `getInnerClassSelectors should return a list of inner selector members for the base object`() {
         assertEquals(
-            ReflectionHelper.getInnerClassSelectors(selector.page.test.reflectionhelper.PageTest),
+            ReflectionHelper.getInnerClassSelectors(PageTest),
             arrayListOf(
-                selector.page.test.reflectionhelper.PageTest.Item,
-                selector.page.test.reflectionhelper.PageTest.Menu
+                PageTest.Item,
+                PageTest.Menu
             )
         )
+    }
+
+    @Test
+    fun `getInnerClassSelectors should return null`() {
+        assertTrue(
+            ReflectionHelper.getInnerClassSelectors
+                (PageTest.Menu.MenuItem).isEmpty())
+    }
+
+
+    @Test
+    fun `getInnerClassSelectors should return nul l`() {
+        assertTrue(
+            ReflectionHelper.getInnerClassSelectors
+                (PageTest.Item).isEmpty())
+    }
+
+    @Test
+    fun `getInnerClassSelectors should return 1`() {
+        assertTrue(
+            ReflectionHelper.getInnerClassSelectors
+                (PageTest.Menu).count() == 1)
     }
 
     @Test
     fun `getClassSelectors should return a list of selector members for inner object`() {
         assertEquals(
             arrayListOf(
-                selector.page.test.reflectionhelper.PageTest.Item.s2
+                PageTest.Item.s2
             ),
             ReflectionHelper.getClassSelectors(
-                selector.page.test.reflectionhelper.PageTest.Item)
+                PageTest.Item)
         )
     }
 
@@ -66,52 +160,51 @@ internal class ReflectionHelperTest: BaseSelectorTest() {
         assertEquals(
             0,
             ReflectionHelper.getInnerClassSelectors(
-                selector.page.test.reflectionhelper.PageTest.Item).size
+                PageTest.Item).size
         )
     }
 
     @Test
     fun `scanObject should init base of members`() {
-     //   assertNull(selector.page.test.reflectionhelper.PageTest.s1.base)
+        ReflectionHelper.scanObject(PageTest)
 
-        ReflectionHelper.scanObject(selector.page.test.reflectionhelper.PageTest)
+        assertEquals(
+            PageTest,
+            PageTest.s1.base)
 
-        assertEquals(selector.page.test.reflectionhelper.PageTest,
-            selector.page.test.reflectionhelper.PageTest.s1.base)
-
-        checkThat(selector.page.test.reflectionhelper.PageTest.s1, "/b/a")
+        checkThat(PageTest.s1, "/b/a")
     }
 
     @Test
     fun `scanObject should init base of members and inner classes`() {
-
-        ReflectionHelper.scanObject(selector.page.test.reflectionhelper.PageTest)
-
-
-        checkThat(selector.page.test.reflectionhelper.PageTest.Item.s2, "/b//Item//s2")
+        checkThat(PageTest.Item.s2, "/b//Item//s2")
     }
 
     @Test
     fun `scanObject should init base of members and inner classes 2`() {
+        ReflectionHelper.scanObject(PageTest)
 
-        ReflectionHelper.scanObject(selector.page.test.reflectionhelper.PageTest)
 
-
-        checkThat(selector.page.test.reflectionhelper.PageTest.Menu.MenuItem.itemMenu, "/b//Item//s2")
+        checkThat(PageTest.Menu.MenuItem.itemMenu, "/b//Menu//MenuItem//mmm5")
     }
 
+    @Test
+    fun `deepClone should create new instance and return inner class`() {
+        ReflectionHelper.scanObject(PageTest)
+        val res = ReflectionHelper.deepClone<PageTestCls.MenuCls>(PageTest.Menu)
+        assertTrue(res.javaClass == PageTestCls.MenuCls::class.java)
+    }
 
     @Test
     fun `scanObject should init base of members and inner classes 3`() {
 
-        ReflectionHelper.scanObject(selector.page.test.reflectionhelper.PageTest)
+      //  val s = PageTest.Menu[2]
+        ReflectionHelper.scanObject(PageTest)
+        val s2 = PageTest.Menu[2]
 
-
-        selector.page.test.reflectionhelper.PageTest().Menu
-
-        val s: Selector = selector.page.test.reflectionhelper.PageTest.Menu[2]
-
-
-        checkThat(selector.page.test.reflectionhelper.PageTest.Menu[2].MenuItem.itemMenu, "/b//Item//s2")
+        checkThat(PageTest.Menu[2].MenuItem.itemMenu, "/b//Item//s2")
     }
+
+
+
 }

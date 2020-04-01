@@ -18,7 +18,7 @@ class SelectorTest: BaseSelectorTest() {
 
     @Test
     fun `clone should copy an object`() {
-        var s = tag("A")
+        var s = tag("A").freeze()
         var s2 = s.clone()
 
         s.setTag("B")
@@ -140,7 +140,7 @@ class SelectorTest: BaseSelectorTest() {
         fun `array index operator with selector`() {
             checkThat(
                 tag("A")[tag("B")],
-                "//A[position()=2 and @label='asd' and text()='text']")
+                "//A[B]")
         }
     }
 }

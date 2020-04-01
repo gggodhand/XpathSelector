@@ -7,20 +7,6 @@ class ComposeSelector(
         selectors.add(selector)
     }
 
-    override fun clone(): ComposeSelector {
-        return copyTo(ComposeSelector())
-    }
-
-    fun copyTo(sel: ComposeSelector): ComposeSelector {
-        var res = (sel as Selector).copyTo(sel) as ComposeSelector
-
-        var newSelectors = ArrayList<Selector>()
-        newSelectors.addAll(selectors)
-        res.selectors = newSelectors
-
-        return res
-    }
-
     fun add(selector: Selector): ComposeSelector {
         var res = clone()
 

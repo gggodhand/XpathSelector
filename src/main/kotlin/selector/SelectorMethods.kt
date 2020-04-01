@@ -3,19 +3,23 @@ package selector
 import kotlin.reflect.KClass
 
 operator fun Selector.plus(selector: Selector): GroupSelector {
+    var s = selector
     if (this is GroupSelector) {
-        addChild(selector)
+        return addChild(s)
     }
 
-    return GroupSelector(this).addChild(selector)
+    return GroupSelector(arrayListOf(this)).addChild(s)
 }
 
 operator fun Selector.times(selector: Selector): GroupSelector {
+    var s = selector
     if (this is GroupSelector) {
-        addDescedant(selector)
+        return addDescedant(selector)
+    } else if (selector is GroupSelector) {
+        s = selector.prefix("//")
     }
 
-    return GroupSelector(this).addDescedant(selector)
+    return GroupSelector(arrayListOf(this)).addDescedant(s)
 }
 
 object SelectorMethodsHelper {
@@ -49,11 +53,8 @@ fun <T: Any> getValue(clazz: KClass<T>) : T? {
     return null
 }
 
-inline operator fun <reified T: Selector>T.get(position: Int): T {
-//    val res: T = getValue()!!
-//    copyTo(res)
-    var res: T = this.javaClass.newInstance()
-  //  val res = this.clone()
+operator fun <T: Selector>T.get(position: Int): T {
+    var res = clone()
     res.attributes.add(KVSelectorAttribute.Position(position))
     return res
 }
@@ -61,17 +62,17 @@ inline operator fun <reified T: Selector>T.get(position: Int): T {
 operator fun <T: Selector>T.get(position: String): T {
     val res = clone()
     res.attributes.add(KVSelectorAttribute.Position(position))
-    return res as T
+    return res
 }
 
 operator fun <T: Selector>T.get(arg: SelectorAttribute): T {
     val res = clone()
     res.attributes.add(arg)
-    return res as T
+    return res
 }
 
 operator fun <T: Selector>T.get(selector: Selector): T {
     val res = clone()
     res.attributes.add(SelectorAttribute(sel = selector))
-    return res as T
+    return res
 }

@@ -7,9 +7,6 @@ class Block: Selector() {
         return selector.toXpath()
     }
 
-    override fun clone(): Block {
-        return copyTo(Block())
-    }
 }
 
 inline operator fun <reified T: Block>T.get(position: Int): T {

@@ -1,9 +1,13 @@
 package selector
 
-import com.sun.org.apache.xpath.internal.operations.Bool
+
+import com.google.gson.Gson
 import net.sf.corn.cps.CPScanner
 import net.sf.corn.cps.PackageNameFilter
+import org.apache.commons.beanutils.BeanUtils
 import java.lang.reflect.Field
+import kotlin.reflect.KClass
+
 
 class ReflectionHelper {
 
@@ -18,6 +22,10 @@ class ReflectionHelper {
             }
 
             return false
+        }
+
+        fun getObject(clazz: Class<*>): Any {
+            return clazz.getField("INSTANCE").get(null)
         }
 
         fun getObjects(packageName: String): ArrayList<Class<*>> {
@@ -37,7 +45,7 @@ class ReflectionHelper {
             val objectClasses = getObjects(packageName)
 
             for (clazz in objectClasses) {
-                scanObject(clazz.getField("INSTANCE").get(null))
+                scanObject(getObject(clazz))
             }
         }
 
@@ -51,6 +59,7 @@ class ReflectionHelper {
                     f.isAccessible = true
                     val member = f.get(obj)
                     if (member is Selector) {
+                        member.initWithName(f.name)
                         res.add(member)
                     }
                 }
@@ -68,14 +77,14 @@ class ReflectionHelper {
             return fields.filter { it.name != "this$0" }
         }
 
-        fun getInnerClassSelectors(obj: Any): ArrayList<Selector> {
+        fun getInnerClassSelectors(obj: Any, root: Any = obj): ArrayList<Selector> {
             var res = ArrayList<Selector>()
 
             val fields = getFieldsFromObj(obj)
 
             for (f in fields) {
                 f.isAccessible = true
-                val member = f.get(obj)
+                val member = f.get(root)
                 if (member is Selector) {
                     if (f.type.simpleName != "Selector") {
                         println(f.type.simpleName)
@@ -89,11 +98,15 @@ class ReflectionHelper {
             return res
         }
 
-        fun scanObject(obj: Any) {
+        fun scanObject(obj: Any, init: Boolean = true) {
 
             if (obj is Selector) {
+
                 for (s in getClassSelectors(obj)) {
                     s.setBase(obj)
+                    if (init) {
+                        s.initWithName("${obj.name}.${s.name}")
+                    }
                 }
 
                 for (s in getInnerClassSelectors(obj)) {
@@ -102,5 +115,97 @@ class ReflectionHelper {
             }
 
         }
+
+        private val gson = Gson()
+
+        fun getNewRootObject(obj: Any): Any {
+            val c = obj::class
+            var innerClass = true
+            var name = c.java.name.split("$").first()
+
+            if (name.isBlank()) {
+                name = c.simpleName!!
+                innerClass = false
+            }
+
+            val cls = Class.forName(name)
+
+            val json = gson.toJson(obj)
+            var res = gson.fromJson(json, cls)
+            scanObject(res)
+            setCloned(res)
+
+            if(obj is Selector && (obj.base != null && innerClass)) {
+                val f = getFieldFromObject(obj.base!!, obj)!!
+                res = f.get(res)
+            }
+
+            return res
+        }
+
+        fun getFieldFromObject(source: Selector, search: Selector): Field? {
+            var cls = if(isObject(source.javaClass)) {
+                source.javaClass.superclass
+            } else {
+                source.javaClass
+            }
+            for (f in cls.declaredFields) {
+                f.isAccessible = true
+                if (f.get(source) === search) {
+                    return f
+                }
+            }
+
+            return null
+        }
+
+        fun isNestedClassOf(sourceClass: KClass<*>, innerClass: KClass<*>): Boolean {
+            val sname = sourceClass.qualifiedName!!
+            val iname = innerClass.qualifiedName!!
+
+            if (sname.endsWith(".Selector")) {
+                return false
+            }
+
+            return iname.startsWith(sname) && sname.length < iname.length
+        }
+
+        fun setCloned(obj: Any): Any {
+            for (f in obj.javaClass.declaredFields) {
+                println("checking $f")
+                f.isAccessible = true
+                val o = f.get(obj)
+
+                if (o !== obj && o != null) {
+                    if (o is Selector) {
+                        println("Cloned for: $f" )
+                        o.cloned()
+                    }
+
+                    if (isNestedClassOf(obj::class, o::class)) {
+                        println("!!!!call setCLoned for: $o")
+                        setCloned(o)
+                    }
+                } else {
+                    println("ignored")
+                }
+
+            }
+
+            if(obj is Selector) {
+                println("Cloned for: $obj" )
+                obj.cloned()
+            }
+
+            return obj
+        }
+
+        fun<T> deepClone(obj: Any): T {
+            return getNewRootObject(obj) as T
+        }
     }
+}
+
+private fun Selector.cloned() {
+    state = SelectorState.CLONED
 }

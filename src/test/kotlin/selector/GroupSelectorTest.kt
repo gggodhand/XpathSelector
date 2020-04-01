@@ -42,7 +42,7 @@ internal class GroupSelectorTest : BaseSelectorTest() {
 
     @Test
     fun `clone should copy an object`() {
-        var s1 = tag("A") * tag("B")
+        var s1 = (tag("A") * tag("B")).freeze()
         var s2 = s1.clone()
         var s3 = s1.clone()
 

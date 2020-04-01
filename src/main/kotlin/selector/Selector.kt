@@ -1,6 +1,16 @@
 package selector
 
+import org.apache.commons.beanutils.BeanUtils
+
+enum class SelectorState {
+    INIT, FREEZE, CLONED
+}
+
 open class Selector(
+
+    var state: SelectorState = SelectorState.INIT,
+
+    @Transient
     internal var base: Selector? = null,
 
     internal var name: String = "",
@@ -9,14 +19,10 @@ open class Selector(
     internal var axe: String = "",
     internal var parent: Int = 0,
 
-     var attributes: SelectorAttributeChain = SelectorAttributeChain()
+    var attributes: SelectorAttributeChain = SelectorAttributeChain()
 ) {
     constructor(sel: Selector) : this() {
-        sel.copyTo(this)
-    }
-
-    open fun clone(): Selector {
-        return copyTo(Selector())
+        BeanUtils.copyProperties(this, sel)
     }
 
     open fun toXpath(): String {
@@ -50,64 +56,74 @@ open class Selector(
 
 }
 
+fun <T: Selector>T.initWithName(name: String): T {
+    this.name = name
+    this.state = SelectorState.FREEZE
+    return this
+}
+
 fun <T: Selector>T.setBase(value: Selector): T {
     this.base = value
     return this
 }
 
-fun <T: Selector>T.copyTo(sel: T): T {
-    sel.prefix = prefix
-    sel.tag = tag
-    sel.parent = parent
-    sel.attributes = attributes.clone()
+fun <T: Selector>T.freeze(): T {
+    this.state = SelectorState.FREEZE
+    return this
+}
 
-    return sel
+fun <T: Selector>T.clone(): T {
+    return if (state == SelectorState.FREEZE ) {
+        ReflectionHelper.deepClone(this)
+    } else {
+        this
+    }
 }
 
 fun <T: Selector>T.prefix(value: String): T {
     val res = clone()
     res.prefix = value
-    return res as T
+    return res
 }
 
 operator fun <T: Selector>T.unaryMinus(): T {
     val res = clone()
     res.prefix = "-"
-    return res as T
+    return res
 }
 
 fun <T: Selector>T.tag(value: String): T {
     val res = clone()
     res.tag = value
-    return res as T
+    return res
 }
 
 fun <T: Selector>T.parent(value: Int): T {
     val res = clone()
     res.parent = value
-    return res as T
+    return res
 }
 
 fun <T: Selector>T.following(): T {
     val res = clone()
     res.axe = "following::"
-    return res as T
+    return res
 }
 
 fun <T: Selector>T.followingSibling(): T {
     val res = clone()
     res.axe = "following-sibling::"
-    return res as T
+    return res
 }
 
 fun <T: Selector>T.preceding(): T {
     val res = clone()
     res.axe = "preceding::"
-    return res as T
+    return res
 }
 
 fun <T: Selector>T.precedingSibling(): T {
     val res = clone()
     res.axe = "preceding-sibling::"
-    return res as T
+    return res
 }
