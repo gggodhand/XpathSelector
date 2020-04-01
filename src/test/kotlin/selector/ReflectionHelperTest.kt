@@ -1,7 +1,6 @@
 package selector
 
 import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import selector.page.test.reflectionhelper.PageTestCls
@@ -85,6 +84,31 @@ internal class ReflectionHelperTest: BaseSelectorTest() {
             },
             Executable {
                 assertTrue(cloned.Menu.MenuItem.itemMenu.state == SelectorState.CLONED, "cloned.Menu.MenuItem.itemMenu.state")
+            }
+        )
+    }
+
+    @Test
+    fun `Selectors names should be init`() {
+
+        assertAll ("cloned members should be CLONED",
+            Executable {
+                assertEquals("PageTestCls", PageTest.name)
+            },
+            Executable {
+                assertEquals("PageTestCls.s1", PageTest.s1.name)
+            },
+            Executable {
+                assertEquals("PageTestCls.Item", PageTest.Item.name)
+            },
+            Executable {
+                assertEquals("PageTestCls.Item.s2", PageTest.Item.s2.name)
+            },
+            Executable {
+                assertEquals("PageTestCls.Menu.MenuItem", PageTest.Menu.MenuItem.name)
+            },
+            Executable {
+                assertEquals("PageTestCls.Menu.MenuItem.itemMenu", PageTest.Menu.MenuItem.itemMenu.name)
             }
         )
     }
@@ -197,12 +221,7 @@ internal class ReflectionHelperTest: BaseSelectorTest() {
 
     @Test
     fun `scanObject should init base of members and inner classes 3`() {
-
-      //  val s = PageTest.Menu[2]
-        ReflectionHelper.scanObject(PageTest)
-        val s2 = PageTest.Menu[2]
-
-        checkThat(PageTest.Menu[2].MenuItem.itemMenu, "/b//Item//s2")
+        checkThat(PageTest.Menu[2].MenuItem.itemMenu, "/b//Menu[position()=2]//MenuItem//mmm5")
     }
 
 

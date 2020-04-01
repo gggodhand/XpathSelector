@@ -1,17 +1,14 @@
 package selector
 
 
-import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import net.sf.corn.cps.CPScanner
 import net.sf.corn.cps.PackageNameFilter
-import org.apache.commons.beanutils.BeanUtils
 import java.lang.reflect.Field
 import kotlin.reflect.KClass
 
 
 class ReflectionHelper {
-
-
     companion object {
 
         fun isObject(clazz: Class<*>): Boolean {
@@ -116,7 +113,7 @@ class ReflectionHelper {
 
         }
 
-        private val gson = Gson()
+        private val gson = GsonBuilder().setPrettyPrinting().create()
 
         fun getNewRootObject(obj: Any): Any {
             val c = obj::class
@@ -129,8 +126,9 @@ class ReflectionHelper {
             }
 
             val cls = Class.forName(name)
-
-            val json = gson.toJson(obj)
+            val root = getRootObject(obj as Selector)
+            root.name = cls.simpleName
+            val json = gson.toJson(root)
             var res = gson.fromJson(json, cls)
             scanObject(res)
             setCloned(res)
@@ -139,6 +137,19 @@ class ReflectionHelper {
                 val f = getFieldFromObject(obj.base!!, obj)!!
                 res = f.get(res)
             }
+
+            return res
+        }
+
+        fun getRootObject(sel: Selector): Selector {
+            var res = sel
+
+            do {
+                if (res.base != null) {
+                    res = res.base!!
+                }
+            }
+            while(res.base != null)
 
             return res
         }
