@@ -6,7 +6,8 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.function.Executable
-import selector.KVSelectorAttribute.Companion.KV
+import selector.attributes.KVSelectorAttribute
+import selector.attributes.KVSelectorAttribute.Companion.KV
 
 @DisplayName("Selector")
 class SelectorTest: BaseSelectorTest() {

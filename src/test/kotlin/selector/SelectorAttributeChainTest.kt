@@ -3,8 +3,9 @@ package selector
 import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.Assertions.*
-import selector.KVSelectorAttribute.Companion.Arg
+import selector.attributes.KVSelectorAttribute.Companion.Arg
 import selector.SelectorFactoryHelper.Companion.tag
+import selector.attributes.SelectorAttributeChain
 
 internal class SelectorAttributeChainTest : BaseSelectorTest() {
 

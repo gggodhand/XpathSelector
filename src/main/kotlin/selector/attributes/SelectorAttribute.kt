@@ -1,4 +1,8 @@
-package selector
+package selector.attributes
+
+import selector.Selector
+import selector.clone
+import selector.prefix
 
 open class SelectorAttribute(
     var strVal: String = "",
@@ -7,7 +11,11 @@ open class SelectorAttribute(
 ) {
     companion object {
         fun ArgC(key: String, value: String): SelectorAttribute {
-            return SelectorAttribute("contains(@$key, '${escape(value)}')")
+            return SelectorAttribute(
+                "contains(@$key, '${escape(
+                    value
+                )}')"
+            )
         }
 
         fun escape(value: String): String {

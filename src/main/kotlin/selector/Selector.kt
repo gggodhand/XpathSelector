@@ -1,17 +1,19 @@
 package selector
 
 import org.apache.commons.beanutils.BeanUtils
+import page.Block
+import selector.attributes.SelectorAttributeChain
+import util.ReflectionHelper
 
 enum class SelectorState {
     INIT, FREEZE, CLONED
 }
 
 open class Selector(
-
     var state: SelectorState = SelectorState.INIT,
 
     @Transient
-    internal var base: Selector? = null,
+    internal var base: Block? = null,
 
     internal var name: String = "",
     internal var prefix: String = "//",
@@ -21,8 +23,10 @@ open class Selector(
 
     var attributes: SelectorAttributeChain = SelectorAttributeChain()
 ) {
-    constructor(sel: Selector) : this() {
-        BeanUtils.copyProperties(this, sel)
+    constructor(sel: Selector?) : this() {
+        if(sel != null) {
+            BeanUtils.copyProperties(this, sel)
+        }
     }
 
     open fun toXpath(): String {
@@ -62,7 +66,7 @@ fun <T: Selector>T.initWithName(name: String): T {
     return this
 }
 
-fun <T: Selector>T.setBase(value: Selector): T {
+fun <T: Selector>T.setBase(value: Block): T {
     this.base = value
     return this
 }

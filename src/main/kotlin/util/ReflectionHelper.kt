@@ -1,9 +1,14 @@
-package selector
+package util
 
 
 import com.google.gson.GsonBuilder
 import net.sf.corn.cps.CPScanner
 import net.sf.corn.cps.PackageNameFilter
+import page.Block
+import selector.Selector
+import selector.SelectorState
+import selector.initWithName
+import selector.setBase
 import java.lang.reflect.Field
 import kotlin.reflect.KClass
 
@@ -42,7 +47,11 @@ class ReflectionHelper {
             val objectClasses = getObjects(packageName)
 
             for (clazz in objectClasses) {
-                scanObject(getObject(clazz))
+                scanObject(
+                    getObject(
+                        clazz
+                    )
+                )
             }
         }
 
@@ -100,9 +109,11 @@ class ReflectionHelper {
             if (obj is Selector) {
 
                 for (s in getClassSelectors(obj)) {
-                    s.setBase(obj)
-                    if (init) {
-                        s.initWithName("${obj.name}.${s.name}")
+                    if (obj is Block) {
+                        s.setBase(obj)
+                        if (init) {
+                            s.initWithName("${obj.name}.${s.name}")
+                        }
                     }
                 }
 
@@ -110,7 +121,6 @@ class ReflectionHelper {
                     scanObject(s)
                 }
             }
-
         }
 
         private val gson = GsonBuilder().setPrettyPrinting().create()
@@ -126,7 +136,8 @@ class ReflectionHelper {
             }
 
             val cls = Class.forName(name)
-            val root = getRootObject(obj as Selector)
+            val root =
+                getRootObject(obj as Selector)
             root.name = cls.simpleName
             val json = gson.toJson(root)
             var res = gson.fromJson(json, cls)

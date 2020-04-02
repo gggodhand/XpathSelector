@@ -1,4 +1,4 @@
-package selector
+package selector.attributes
 
 class KVSelectorAttribute(
     var key: String = "",
@@ -18,7 +18,10 @@ class KVSelectorAttribute(
         }
 
         fun Arg(key: String, value: String): KVSelectorAttribute {
-            return KVSelectorAttribute("@$key", "'${escape(value)}'")
+            return KVSelectorAttribute(
+                "@$key",
+                "'${escape(value)}'"
+            )
         }
     }
 

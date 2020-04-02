@@ -1,5 +1,7 @@
 package selector
 
+import selector.attributes.KVSelectorAttribute
+import selector.attributes.SelectorAttribute
 import kotlin.reflect.KClass
 
 operator fun Selector.plus(selector: Selector): GroupSelector {

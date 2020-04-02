@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.Assertions.*
 import selector.SelectorFactoryHelper.Companion.tag
+import selector.attributes.SelectorAttribute
 
 internal class SelectorAttributeTest : BaseSelectorTest() {
 

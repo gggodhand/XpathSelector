@@ -1,4 +1,6 @@
-package selector
+package selector.attributes
+
+import selector.Selector
 
 class SelectorAttributeChain(
     private var attributes: ArrayList<SelectorAttribute> = ArrayList()

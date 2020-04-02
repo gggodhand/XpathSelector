@@ -2,7 +2,8 @@ package selector
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import selector.KVSelectorAttribute.Companion.Arg
+import selector.attributes.KVSelectorAttribute.Companion.Arg
+import selector.attributes.SelectorAttribute
 
 internal class KVSelectorAttributeTest : BaseSelectorTest() {
 

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test
 import selector.page.test.reflectionhelper.PageTestCls
 import org.junit.jupiter.api.function.Executable
 import selector.page.test.reflectionhelper.PageTest
+import util.ReflectionHelper
 
 internal class ReflectionHelperTest: BaseSelectorTest() {
 
@@ -138,11 +139,11 @@ internal class ReflectionHelperTest: BaseSelectorTest() {
     @Test
     fun `getInnerClassSelectors should return a list of inner selector members for the base object`() {
         assertEquals(
-            ReflectionHelper.getInnerClassSelectors(PageTest),
             arrayListOf(
                 PageTest.Item,
                 PageTest.Menu
-            )
+            ),
+            ReflectionHelper.getInnerClassSelectors(PageTest)
         )
     }
 
