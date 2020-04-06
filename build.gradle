@@ -1,13 +1,17 @@
 plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.3.50'
+    id 'org.jetbrains.kotlin.jvm' version '1.3.70'
     id 'jacoco'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.3.70'
 }
 
 group 'XpathSelector'
 version '1.0-SNAPSHOT'
 
 repositories {
+    google()
+    jcenter()
     mavenCentral()
+    maven { url "https://kotlin.bintray.com/kotlinx" }
 }
 
 dependencies {
@@ -16,8 +20,11 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
     compile "net.sf.corn:corn-cps:1.0.1"
     compile "org.jetbrains.kotlin:kotlin-reflect:1.3.61"
+    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.8.+'
     implementation 'com.google.code.gson:gson:2.8.6'
     compile 'commons-beanutils:commons-beanutils:1.9.4'
+    implementation "org.jetbrains.kotlin:kotlin-serialization:1.3.70"
+    
 }
 
 compileKotlin {
@@ -50,3 +57,5 @@ jacocoTestReport {
 }
 
 test.finalizedBy(jacocoTestReport)
+
+apply plugin: 'kotlinx-serialization'

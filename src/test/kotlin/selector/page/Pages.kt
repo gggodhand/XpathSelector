@@ -1,11 +1,11 @@
 package selector.page
 
 import selector.Selector
-import selector.SelectorFactoryHelper.Companion.tag
+import selector.SelectorFactoryHelper.Companion.s_tag
 import selector.prefix
 import selector.tag
 
-open class PageTestCls: Selector(tag("b").prefix("/")) {
+open class PageTestCls: Selector(s_tag("b").prefix("/")) {
     var s1: Selector = tag("a")
 
     inner class ItemCls: Selector(tag = "Item") {
@@ -21,7 +21,7 @@ object PageTest: PageTestCls()
 
 
 object PageTest2 {
-    var s1: Selector = tag("a")
+    var s1: Selector = s_tag("a")
 
     object Item: Selector(tag = "aI") {
         val ss = tag("ss")

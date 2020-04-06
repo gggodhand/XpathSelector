@@ -1,6 +1,6 @@
 package selector
 
-import selector.SelectorFactoryHelper.Companion.tag
+import selector.SelectorFactoryHelper.Companion.s_tag
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 
@@ -8,5 +8,5 @@ import org.junit.jupiter.api.Test
 internal class SelectorFactoryHelperTest : BaseSelectorTest() {
 
     @Test
-    fun `Tag Selector should create Selector with tag`() = checkThat(tag("A"), "//A")
+    fun `Tag Selector should create Selector with tag`() = checkThat(s_tag("A"), "//A")
 }

@@ -23,9 +23,11 @@ open class Selector(
 
     var attributes: SelectorAttributeChain = SelectorAttributeChain()
 ) {
+    protected var copyied: Boolean = false
     constructor(sel: Selector?) : this() {
         if(sel != null) {
             BeanUtils.copyProperties(this, sel)
+            copyied = true
         }
     }
 
@@ -37,7 +39,10 @@ open class Selector(
             }
         }
 
-        val baseXpath = base?.toXpath() ?: ""
+        var baseXpath = ""
+        if (base != null && base!!.copyied) {
+            baseXpath = base!!.toXpath()
+        }
         return "$baseXpath$prefix$axe$tag$p${attributes.build()}"
     }
 

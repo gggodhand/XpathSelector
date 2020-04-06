@@ -1,6 +1,6 @@
 package selector
 
-import selector.SelectorFactoryHelper.Companion.tag
+import selector.SelectorFactoryHelper.Companion.s_tag
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
@@ -19,7 +19,7 @@ class SelectorTest: BaseSelectorTest() {
 
     @Test
     fun `clone should copy an object`() {
-        var s = tag("A").freeze()
+        var s = s_tag("A").freeze()
         var s2 = s.clone()
 
         s.setTag("B")
@@ -79,28 +79,28 @@ class SelectorTest: BaseSelectorTest() {
         @Test
         fun `following method should add following axis`() {
             checkThat(
-                tag("A").following(),
+                s_tag("A").following(),
                 "//following::A")
         }
 
         @Test
         fun `followingSibling method should add following axis`() {
             checkThat(
-                tag("A").followingSibling(),
+                s_tag("A").followingSibling(),
                 "//following-sibling::A")
         }
 
         @Test
         fun `preceding method should add following axis`() {
             checkThat(
-                tag("A").preceding(),
+                s_tag("A").preceding(),
                 "//preceding::A")
         }
 
         @Test
         fun `precedingSibling method should add following axis`() {
             checkThat(
-                tag("A").precedingSibling(),
+                s_tag("A").precedingSibling(),
                 "//preceding-sibling::A")
         }
     }
@@ -112,36 +112,38 @@ class SelectorTest: BaseSelectorTest() {
         @Test
         fun `array index operator with Int arg should set selector's position`() {
             checkThat(
-                tag("A")[2],
+                s_tag("A")[2],
                 "//A[position()=2]")
         }
 
         @Test
         fun `array index operator with String arg should set selector's position`() {
             checkThat(
-                tag("A")["last()"],
+                s_tag("A")["last()"],
                 "//A[position()=last()]")
         }
 
         @Test
         fun `array index operator with Int and KV args should set selector's position and add additional parameter`() {
             checkThat(
-                tag("A")[2][KVSelectorAttribute("@label", "'asd'")],
+                s_tag("A")[2][KVSelectorAttribute("@label", "'asd'")],
                 "//A[position()=2 and @label='asd']")
         }
 
         @Test
         fun `array index operator with Int and two KV args should set selector's position and add additional parameters`() {
             checkThat(
-                tag("A")[2][KV("@label", "'asd'")][KV("text()", "'text'")],
+                s_tag("A")[2][KV("@label", "'asd'")][KV("text()", "'text'")],
                 "//A[position()=2 and @label='asd' and text()='text']")
         }
 
         @Test
         fun `array index operator with selector`() {
             checkThat(
-                tag("A")[tag("B")],
+                s_tag("A")[s_tag("B")],
                 "//A[B]")
+
+            //A[B or C]
         }
     }
 }

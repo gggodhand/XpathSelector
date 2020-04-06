@@ -1,6 +1,9 @@
 package util
 
 
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
 import com.google.gson.GsonBuilder
 import net.sf.corn.cps.CPScanner
 import net.sf.corn.cps.PackageNameFilter
@@ -11,6 +14,7 @@ import selector.initWithName
 import selector.setBase
 import java.lang.reflect.Field
 import kotlin.reflect.KClass
+import kotlin.reflect.jvm.jvmName
 
 
 class ReflectionHelper {
@@ -75,12 +79,16 @@ class ReflectionHelper {
         }
 
         fun getFieldsFromObj(obj: Any): List<out Field> {
-            val fields = if (isObject(obj.javaClass))
-                obj.javaClass.superclass.declaredFields
-            else
-                obj.javaClass.declaredFields
+            var fields = obj.javaClass.declaredFields
 
-            return fields.filter { it.name != "this$0" }
+            if (isObject(obj.javaClass)) {
+                val f = obj.javaClass.declaredFields
+                if (f.size == 1 && f.first().name == "INSTANCE") {
+                    fields = obj.javaClass.superclass.declaredFields
+                }
+            }
+
+            return fields.filter { it.name != "this$0" && it.name != "INSTANCE" }
         }
 
         fun getInnerClassSelectors(obj: Any, root: Any = obj): ArrayList<Selector> {
@@ -107,7 +115,9 @@ class ReflectionHelper {
         fun scanObject(obj: Any, init: Boolean = true) {
 
             if (obj is Selector) {
-
+                if (obj.name.isBlank()) {
+                    obj.name = obj::class.simpleName.toString()
+                }
                 for (s in getClassSelectors(obj)) {
                     if (obj is Block) {
                         s.setBase(obj)
@@ -126,27 +136,33 @@ class ReflectionHelper {
         private val gson = GsonBuilder().setPrettyPrinting().create()
 
         fun getNewRootObject(obj: Any): Any {
-            val c = obj::class
-            var innerClass = true
-            var name = c.java.name.split("$").first()
+            var name = obj::class.jvmName
 
-            if (name.isBlank()) {
-                name = c.simpleName!!
-                innerClass = false
+            if(obj is Selector) {
+                val root = getRootObject(obj)
+                name = root::class.jvmName
             }
 
             val cls = Class.forName(name)
-            val root =
-                getRootObject(obj as Selector)
+            val root = getRootObject(obj as Selector)
             root.name = cls.simpleName
+
             val json = gson.toJson(root)
             var res = gson.fromJson(json, cls)
             scanObject(res)
             setCloned(res)
 
-            if(obj is Selector && (obj.base != null && innerClass)) {
+            if(obj is Selector && (obj.base != null)) {
                 val f = getFieldFromObject(obj.base!!, obj)!!
-                res = f.get(res)
+
+                val resObj = if (obj.base!!.base != null ) {
+                    val base_f = getFieldFromObject(obj.base!!.base!!, obj.base!!)!!
+                    base_f.get(res)
+                } else {
+                    res
+                }
+
+                res = f.get(resObj)
             }
 
             return res
@@ -166,14 +182,40 @@ class ReflectionHelper {
         }
 
         fun getFieldFromObject(source: Selector, search: Selector): Field? {
-            var cls = if(isObject(source.javaClass)) {
-                source.javaClass.superclass
-            } else {
-                source.javaClass
+            var fields = source.javaClass.declaredFields
+
+            if (isObject(source.javaClass)) {
+                val f = source.javaClass.declaredFields
+                if (f.size == 1 && f.first().name == "INSTANCE") {
+                    fields = source.javaClass.superclass.declaredFields
+                }
             }
-            for (f in cls.declaredFields) {
+
+            for (f in fields) {
                 f.isAccessible = true
                 if (f.get(source) === search) {
+                    f.isAccessible = true
+                    return f
+                }
+            }
+
+            return null
+        }
+
+        fun getBase(source: Selector, search: Selector): Field? {
+            var fields = source.javaClass.declaredFields
+
+            if (isObject(source.javaClass)) {
+                val f = source.javaClass.declaredFields
+                if (f.size == 1 && f.first().name == "INSTANCE") {
+                    fields = source.javaClass.superclass.declaredFields
+                }
+            }
+
+            for (f in fields) {
+                f.isAccessible = true
+                if (f.get(source) === search) {
+                    f.isAccessible = true
                     return f
                 }
             }

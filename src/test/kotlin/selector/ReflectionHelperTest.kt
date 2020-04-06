@@ -115,16 +115,6 @@ internal class ReflectionHelperTest: BaseSelectorTest() {
     }
 
     @Test
-    fun `getObjects should return list of objects`() {
-        assertEquals(
-            ReflectionHelper.getObjects("selector.page.test.reflectionhelper"),
-            arrayListOf(
-                PageTest::class.java,
-                selector.page.test.reflectionhelper.PageTest2::class.java)
-        )
-    }
-
-    @Test
     fun `getClassSelectors should return a list of selector members for the base object`() {
         assertEquals(
             ReflectionHelper.getClassSelectors(PageTest),
