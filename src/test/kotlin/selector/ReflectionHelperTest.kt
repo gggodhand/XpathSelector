@@ -2,6 +2,7 @@ package selector
 
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import selector.page.test.reflectionhelper.PageTestCls
 import org.junit.jupiter.api.function.Executable
@@ -64,7 +65,7 @@ internal class ReflectionHelperTest: BaseSelectorTest() {
 
     @Test
     fun `setCloned method should set all selectors to the cloned state`() {
-        val cloned = PageTest.Item.clone().base as PageTestCls
+        val cloned = PageTest.Item.freeze().clone().base as PageTestCls
 
 
         assertAll ("cloned members should be CLONED",
@@ -94,22 +95,22 @@ internal class ReflectionHelperTest: BaseSelectorTest() {
 
         assertAll ("cloned members should be CLONED",
             Executable {
-                assertEquals("PageTestCls", PageTest.name)
+                assertEquals("PageTest", PageTest.name)
             },
             Executable {
-                assertEquals("PageTestCls.s1", PageTest.s1.name)
+                assertEquals("PageTest.s1", PageTest.s1.name)
             },
             Executable {
-                assertEquals("PageTestCls.Item", PageTest.Item.name)
+                assertEquals("PageTest.Item", PageTest.Item.name)
             },
             Executable {
-                assertEquals("PageTestCls.Item.s2", PageTest.Item.s2.name)
+                assertEquals("PageTest.Item.s2", PageTest.Item.s2.name)
             },
             Executable {
-                assertEquals("PageTestCls.Menu.MenuItem", PageTest.Menu.MenuItem.name)
+                assertEquals("PageTest.Menu.MenuItem", PageTest.Menu.MenuItem.name)
             },
             Executable {
-                assertEquals("PageTestCls.Menu.MenuItem.itemMenu", PageTest.Menu.MenuItem.itemMenu.name)
+                assertEquals("PageTest.Menu.MenuItem.itemMenu", PageTest.Menu.MenuItem.itemMenu.name)
             }
         )
     }

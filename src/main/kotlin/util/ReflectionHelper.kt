@@ -235,7 +235,8 @@ class ReflectionHelper {
         }
 
         fun setCloned(obj: Any): Any {
-            for (f in obj.javaClass.declaredFields) {
+            val fields = getFieldsFromObj(obj)
+            for (f in fields) {
                 println("checking $f")
                 f.isAccessible = true
                 val o = f.get(obj)
