@@ -200,7 +200,6 @@ internal class ReflectionHelperTest: BaseSelectorTest() {
     fun `scanObject should init base of members and inner classes 2`() {
         ReflectionHelper.scanObject(PageTest)
 
-
         checkThat(PageTest.Menu.MenuItem.itemMenu, "/b//Menu//MenuItem//mmm5")
     }
 

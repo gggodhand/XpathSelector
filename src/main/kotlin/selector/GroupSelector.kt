@@ -1,14 +1,26 @@
 package selector
 
 import org.apache.commons.beanutils.BeanUtils
+import selector.SelectorFactoryHelper.Companion.s_tag
+import selector.attributes.SelectorAttributeChain
 
 open class GroupSelector(
     var selectors: ArrayList<Selector> = ArrayList()): Selector() {
+
+    private var firstAttributes = SelectorAttributeChain()
 
     constructor(sel: Selector?) : this() {
         if(sel != null) {
             BeanUtils.copyProperties(this, sel)
             copyied = true
+
+            firstAttributes = if(sel is GroupSelector) {
+                sel.firstAttributes
+            } else {
+                sel.attributes.clone()
+            }
+
+            attributes = SelectorAttributeChain()
         }
     }
 
@@ -29,7 +41,7 @@ open class GroupSelector(
     }
 
     override fun toXpath(addAttr:Boolean): String {
-        var res = super.toXpath(false)
+        var res = super.toXpath(false) + firstAttributes.build()
 
         selectors.forEach {
             res += it.toXpath()
@@ -57,4 +69,35 @@ open class GroupSelector(
         result = 31 * result + selectors.hashCode()
         return result
     } */
+}
+
+operator fun Selector.plus(selector: Selector): GroupSelector {
+    var s = selector
+    if (this is GroupSelector) {
+        return addChild(s)
+    }
+
+    return GroupSelector(this).addChild(s)
+}
+
+operator fun Selector.times(selector: Selector): GroupSelector {
+    var s = selector
+    if (this is GroupSelector) {
+        return addDescedant(selector)
+    } else if (selector is GroupSelector) {
+        s = selector.prefix("//")
+    }
+
+    return GroupSelector(this).addDescedant(s)
+}
+
+fun Selector.parentTag(tag: String, count: Int): GroupSelector {
+    val p = s_tag(tag)
+    var res = this
+
+    for (i in 1..count) {
+        res += p
+    }
+
+    return res as GroupSelector
 }

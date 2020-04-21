@@ -30,10 +30,10 @@ class SelectorTests: BaseSelectorTest() {
 
     @Test
     fun `GoogleSearch - searchInput  pos 2`() = checkThat(GoogleSearch.Results.desc,
-        "//*[id=search]/div/div/div//div[position()=2]")
+        "//*[@id='search']/div/div/div//div[position()=2]")
 
     @Test
     fun `GoogleSearch - searchInput  pos 3`() = checkThat(GoogleSearch.Results[2].lblTitle,
-        "//*[@id='search'][2]/div/div/div//h3")
+        "(//*[@id='search']/div/div/div)[position()=2]//h3")
 
 }

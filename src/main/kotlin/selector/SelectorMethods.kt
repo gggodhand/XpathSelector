@@ -4,25 +4,7 @@ import selector.SelectorFactoryHelper.Companion.s_tag
 import selector.attributes.KVSelectorAttribute
 import selector.attributes.SelectorAttribute
 
-operator fun Selector.plus(selector: Selector): GroupSelector {
-    var s = selector
-    if (this is GroupSelector) {
-        return addChild(s)
-    }
 
-    return GroupSelector(this).addChild(s)
-}
-
-operator fun Selector.times(selector: Selector): GroupSelector {
-    var s = selector
-    if (this is GroupSelector) {
-        return addDescedant(selector)
-    } else if (selector is GroupSelector) {
-        s = selector.prefix("//")
-    }
-
-    return GroupSelector(this).addDescedant(s)
-}
 
 object SelectorMethodsHelper {
     var prevComposeSelector: ComposeSelector? = null
@@ -65,13 +47,3 @@ operator fun <T: Selector>T.get(selector: Selector): T {
     return res
 }
 
-fun Selector.parentTag(tag: String, count: Int): GroupSelector {
-    val p = s_tag(tag)
-    var res = this
-
-    for (i in 1..count) {
-        res += p
-    }
-
-    return res as GroupSelector
-}
