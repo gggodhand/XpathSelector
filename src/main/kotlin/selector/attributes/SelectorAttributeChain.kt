@@ -6,6 +6,15 @@ class SelectorAttributeChain(
     private var attributes: ArrayList<SelectorAttribute> = ArrayList()
 ) {
 
+    val count: Int
+        get() = attributes.size
+
+    val isEmpty: Boolean
+        get() = count == 0
+
+    val isNotEmpty: Boolean
+        get() = !isEmpty
+
     fun clone(): SelectorAttributeChain {
         var newAttributes = ArrayList<SelectorAttribute>()
         newAttributes.addAll(attributes)
@@ -14,6 +23,10 @@ class SelectorAttributeChain(
 
     fun add(attr: SelectorAttribute) {
         attributes.add(attr)
+    }
+
+    fun add(attr: SelectorAttributeChain) {
+        attributes.addAll(attr.attributes)
     }
 
     fun build(): String {

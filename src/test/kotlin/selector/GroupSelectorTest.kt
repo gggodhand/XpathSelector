@@ -40,6 +40,7 @@ internal class GroupSelectorTest : BaseSelectorTest() {
             = checkThat((s_tag("A") + s_tag("B")) + (s_tag("C") * s_tag("E")),
         "//A/B/C//E")
 
+
     @Test
     fun `clone should copy an object`() {
         var s1 = (s_tag("A") * s_tag("B")).freeze()
@@ -50,13 +51,20 @@ internal class GroupSelectorTest : BaseSelectorTest() {
         s3.selectors[0] = s_tag("C")
 
         assertAll(
-            Executable { assertEquals(2, s2.selectors.size) },
-            Executable { assertEquals(s_tag("A"), s2.selectors[0]) },
-            Executable { assertEquals(s_tag("B"), s2.selectors[1]) },
-
-            Executable { assertEquals(0, s1.selectors.size) },
-            Executable { assertEquals(s_tag("C"), s3.selectors[0]) }
+            Executable { assertEquals(1, s2.selectors.size, "1") },
+            Executable { assertEquals(s_tag("B"), s2.selectors[0], "2") },
+            Executable { assertEquals(0, s1.selectors.size, "3") },
+            Executable { assertEquals(s_tag("C"), s3.selectors[0], "4") }
         )
     }
+
+    @Test
+    fun `parent tag should build a chain of tags`() = checkThat(s_tag("A").parentTag("div", 2),
+        "//A/div/div")
+
+    @Test
+    fun `attributes of group selector should be added to the first selector`()
+            = checkThat((s_tag("A") + s_tag("B"))[2],
+        "(//A/B)[position()=2]")
 }
 

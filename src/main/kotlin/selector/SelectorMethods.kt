@@ -1,8 +1,8 @@
 package selector
 
+import selector.SelectorFactoryHelper.Companion.s_tag
 import selector.attributes.KVSelectorAttribute
 import selector.attributes.SelectorAttribute
-import kotlin.reflect.KClass
 
 operator fun Selector.plus(selector: Selector): GroupSelector {
     var s = selector
@@ -10,7 +10,7 @@ operator fun Selector.plus(selector: Selector): GroupSelector {
         return addChild(s)
     }
 
-    return GroupSelector(arrayListOf(this)).addChild(s)
+    return GroupSelector(this).addChild(s)
 }
 
 operator fun Selector.times(selector: Selector): GroupSelector {
@@ -21,7 +21,7 @@ operator fun Selector.times(selector: Selector): GroupSelector {
         s = selector.prefix("//")
     }
 
-    return GroupSelector(arrayListOf(this)).addDescedant(s)
+    return GroupSelector(this).addDescedant(s)
 }
 
 object SelectorMethodsHelper {
@@ -39,20 +39,6 @@ operator fun Selector.div(selector: Selector): ComposeSelector {
 
     SelectorMethodsHelper.prevComposeSelector = ComposeSelector(this).add(selector)
     return SelectorMethodsHelper.prevComposeSelector!!
-}
-
-
-/* Convenience wrapper that allows you to call getValue<Type>() instead of of getValue(Type::class) */
-inline fun <reified T: Any> getValue() : T? = getValue(T::class)
-
-/* We have no way to guarantee that an empty constructor exists, so must return T? instead of T */
-fun <T: Any> getValue(clazz: KClass<T>) : T? {
-    clazz.constructors.forEach { con ->
-        if (con.parameters.isEmpty()) {
-            return con.call()
-        }
-    }
-    return null
 }
 
 operator fun <T: Selector>T.get(position: Int): T {
@@ -77,4 +63,15 @@ operator fun <T: Selector>T.get(selector: Selector): T {
     val res = clone()
     res.attributes.add(SelectorAttribute(sel = selector))
     return res
+}
+
+fun Selector.parentTag(tag: String, count: Int): GroupSelector {
+    val p = s_tag(tag)
+    var res = this
+
+    for (i in 1..count) {
+        res += p
+    }
+
+    return res as GroupSelector
 }

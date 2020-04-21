@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.function.Executable
 import selector.attributes.KVSelectorAttribute
+import selector.attributes.KVSelectorAttribute.Companion.Arg
 import selector.attributes.KVSelectorAttribute.Companion.KV
 
 @DisplayName("Selector")
@@ -28,6 +29,23 @@ class SelectorTest: BaseSelectorTest() {
             Executable { assertEquals("B", s.getTag()) },
             Executable { assertEquals("A", s2.getTag()) }
         )
+    }
+
+    @Test
+    fun `clone should copy attributes`() {
+        val s1 = s_tag("a")[Arg("name", "asd")].freeze()
+        val s2 = s1.clone()
+
+        assertEquals(s1.toXpath(), s2.toXpath())
+    }
+
+
+    @Test
+    fun `clone should copy group selectors`() {
+        val s1 = s_tag("a") + s_tag("B")
+        val s2 = s1.freeze().clone()
+
+        assertEquals(s1.toXpath(), s2.toXpath())
     }
 
     @Test

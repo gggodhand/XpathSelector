@@ -12,7 +12,6 @@ enum class SelectorState {
 open class Selector(
     var state: SelectorState = SelectorState.INIT,
 
-    @Transient
     internal var base: Block? = null,
 
     internal var name: String = "",
@@ -31,7 +30,7 @@ open class Selector(
         }
     }
 
-    open fun toXpath(): String {
+    open fun toXpath(addAttr:Boolean = true): String {
         var p = ""
         if (parent > 0) {
             for (i in 1..parent) {
@@ -43,7 +42,12 @@ open class Selector(
         if (base != null && base!!.copyied) {
             baseXpath = base!!.toXpath()
         }
-        return "$baseXpath$prefix$axe$tag$p${attributes.build()}"
+
+        var res = "$baseXpath$prefix$axe$tag$p"
+        if (addAttr) {
+            res += attributes.build()
+        }
+        return res
     }
 
 
@@ -72,7 +76,10 @@ fun <T: Selector>T.initWithName(name: String): T {
 }
 
 fun <T: Selector>T.setBase(value: Block): T {
-    this.base = value
+    if (value !== this) {
+        this.base = value
+    }
+
     return this
 }
 

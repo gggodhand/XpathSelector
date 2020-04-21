@@ -15,7 +15,7 @@ class ComposeSelector(
         return res
     }
 
-    override fun toXpath(): String {
+    override fun toXpath(addAttr:Boolean): String {
         var res = ""
 
         selectors.forEach {

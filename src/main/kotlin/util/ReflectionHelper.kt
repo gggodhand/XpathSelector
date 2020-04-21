@@ -1,10 +1,7 @@
 package util
 
 
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.google.gson.GsonBuilder
+import com.rits.cloning.Cloner
 import net.sf.corn.cps.CPScanner
 import net.sf.corn.cps.PackageNameFilter
 import page.Block
@@ -133,7 +130,7 @@ class ReflectionHelper {
             }
         }
 
-        private val gson = GsonBuilder().setPrettyPrinting().create()
+        val cloner = Cloner()
 
         fun getNewRootObject(obj: Any): Any {
             var name = obj::class.jvmName
@@ -147,8 +144,11 @@ class ReflectionHelper {
             val root = getRootObject(obj as Selector)
             root.name = cls.simpleName
 
-            val json = gson.toJson(root)
-            var res = gson.fromJson(json, cls)
+
+
+            val clone = cloner.deepClone(root)
+
+            var res = cloner.deepClone(root) /// gson.fromJson(json, cls)
             scanObject(res)
             setCloned(res)
 
@@ -162,7 +162,7 @@ class ReflectionHelper {
                     res
                 }
 
-                res = f.get(resObj)
+                res = f.get(resObj) as Selector?
             }
 
             return res

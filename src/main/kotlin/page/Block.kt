@@ -1,10 +1,11 @@
 package page
 
+import selector.GroupSelector
 import selector.Selector
 
 
 //Container for selectors
-open class Block(base: Selector? = null): Selector(sel = base ) {
+open class Block(base: Selector? = null): GroupSelector(base) {
 
 }
 
