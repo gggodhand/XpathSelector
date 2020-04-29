@@ -2,6 +2,7 @@ package demo.google
 
 import demo.google.pages.GoogleSearch
 import io.github.bonigarcia.wdm.DriverManagerType
+import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -25,6 +26,12 @@ class GoogleTestExample {
 
             Global.executor = HtmlExecutor(driver)
             driver.get("http://google.com")
+        }
+
+        @AfterAll
+        @JvmStatic
+        fun finish() {
+            DriverFactory.driver.quit()
         }
     }
 
