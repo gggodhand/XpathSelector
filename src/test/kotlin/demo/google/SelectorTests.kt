@@ -1,15 +1,11 @@
 package demo.google
 
 import demo.google.pages.GoogleSearch
-import io.github.bonigarcia.wdm.DriverManagerType
-import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
-import selector.BaseSelectorTest
-import selector.SelectorTest
-import selector.get
-import selenium.DriverFactory
-import util.ReflectionHelper
+import org.nac.xpathselector.selector.BaseSelectorTest
+import org.nac.xpathselector.selector.get
+import org.nac.xpathselector.util.ReflectionHelper
 
 class SelectorTests: BaseSelectorTest() {
     companion object {
@@ -36,4 +32,10 @@ class SelectorTests: BaseSelectorTest() {
     fun `GoogleSearch - searchInput  pos 3`() = checkThat(GoogleSearch.Results[2].lblTitle,
         "(//*[@id='search']/div/div/div)[position()=2]//h3")
 
+    fun asd() {
+        val s = """
+            
+            
+        """.trimIndent()
+    }
 }

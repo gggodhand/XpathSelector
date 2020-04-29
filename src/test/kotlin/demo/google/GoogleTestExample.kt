@@ -5,10 +5,13 @@ import io.github.bonigarcia.wdm.DriverManagerType
 import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
-import selector.get
-import selenium.DriverFactory
-import selenium.html.text
-import util.ReflectionHelper
+import org.nac.xpathselector.selector.get
+import org.nac.xpathselector.selenium.DriverFactory
+import org.nac.xpathselector.selenium.html.Factory
+import org.nac.xpathselector.selenium.html.Global
+import org.nac.xpathselector.selenium.html.HtmlExecutor
+import org.nac.xpathselector.selenium.html.text
+import org.nac.xpathselector.util.ReflectionHelper
 
 class GoogleTestExample {
 
@@ -19,6 +22,8 @@ class GoogleTestExample {
             ReflectionHelper.scanObject(GoogleSearch)
             val driver = DriverFactory.create(DriverManagerType.CHROME)
             DriverFactory.driver = driver
+
+            Global.executor = HtmlExecutor(driver)
             driver.get("http://google.com")
         }
     }
