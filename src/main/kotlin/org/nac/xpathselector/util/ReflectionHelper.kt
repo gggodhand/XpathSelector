@@ -76,16 +76,15 @@ class ReflectionHelper {
         }
 
         fun getFieldsFromObj(obj: Any): List<out Field> {
-            var fields = obj.javaClass.declaredFields
+            var fields = obj.javaClass.declaredFields.filter { !it.name.startsWith("$") }.toTypedArray()
 
             if (isObject(obj.javaClass)) {
-                val f = obj.javaClass.declaredFields
-                if (f.size == 1 && f.first().name == "INSTANCE") {
+                if (fields.size == 1 && fields.first().name == "INSTANCE") {
                     fields = obj.javaClass.superclass.declaredFields
                 }
             }
 
-            return fields.filter { it.name != "this$0" && it.name != "INSTANCE" }
+            return fields.filter { !it.name.contains("$") && it.name != "INSTANCE" }
         }
 
         fun getInnerClassSelectors(obj: Any, root: Any = obj): ArrayList<Selector> {
@@ -144,8 +143,6 @@ class ReflectionHelper {
             val root = getRootObject(obj as Selector)
             root.name = cls.simpleName
 
-
-
             val clone = cloner.deepClone(root)
 
             var res = cloner.deepClone(root) /// gson.fromJson(json, cls)
@@ -182,11 +179,10 @@ class ReflectionHelper {
         }
 
         fun getFieldFromObject(source: Selector, search: Selector): Field? {
-            var fields = source.javaClass.declaredFields
+            var fields = source.javaClass.declaredFields.filter { !it.name.startsWith("$") }.toTypedArray()
 
             if (isObject(source.javaClass)) {
-                val f = source.javaClass.declaredFields
-                if (f.size == 1 && f.first().name == "INSTANCE") {
+                if (fields.size == 1 && fields.first().name == "INSTANCE") {
                     fields = source.javaClass.superclass.declaredFields
                 }
             }
@@ -201,7 +197,7 @@ class ReflectionHelper {
 
             return null
         }
-
+/*
         fun getBase(source: Selector, search: Selector): Field? {
             var fields = source.javaClass.declaredFields
 
@@ -221,7 +217,7 @@ class ReflectionHelper {
             }
 
             return null
-        }
+        }*/
 
         fun isNestedClassOf(sourceClass: KClass<*>, innerClass: KClass<*>): Boolean {
             val sname = sourceClass.qualifiedName!!

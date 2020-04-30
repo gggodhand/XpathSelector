@@ -4,6 +4,7 @@ import org.openqa.selenium.By
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.WebElement
 import org.nac.xpathselector.selector.Selector
+import org.nac.xpathselector.selenium.html.webElement
 import java.time.Duration
 
 enum class Timeout {
@@ -33,23 +34,31 @@ abstract class Executor(
     }
 
     open fun waitForPresent(selector: Selector, timeout: Timeout): Boolean {
-        refreshCache()
+        if (useCache) {
+            refreshCache()
 
-        if (timeout != Timeout.NONE) {
-            return WaitUtilCache.waitForVisible(selector, toDuration(timeout))
+            if (timeout != Timeout.NONE) {
+                return WaitUtilCache.waitForVisible(selector, toDuration(timeout))
+            }
+
+            return  cache.isVisible(selector)
+        } else {
+            return true
         }
-
-        return cache.isVisible(selector)
     }
 
     open fun waitForDissapear(selector: Selector, timeout: Timeout): Boolean {
-        refreshCache()
+        if (useCache) {
+            refreshCache()
 
-        if (timeout != Timeout.NONE) {
-            return WaitUtilCache.waitForDisappear(selector, toDuration(timeout))
+            if (timeout != Timeout.NONE) {
+                return WaitUtilCache.waitForDisappear(selector, toDuration(timeout))
+            }
+
+            return !cache.isVisible(selector)
+        } else {
+            return true
         }
-
-        return !cache.isVisible(selector)
     }
 
     fun sleep(duration: Duration) = sleep(duration.toMillis())

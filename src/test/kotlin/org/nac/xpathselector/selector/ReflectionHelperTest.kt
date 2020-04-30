@@ -66,7 +66,6 @@ internal class ReflectionHelperTest: BaseSelectorTest() {
     fun `setCloned method should set all selectors to the cloned state`() {
         val cloned = PageTest.Item.freeze().clone().base as PageTestCls
 
-
         assertAll ("cloned members should be CLONED",
             Executable {
                 assertTrue(cloned.state == SelectorState.CLONED, "cloned.state")
@@ -138,12 +137,16 @@ internal class ReflectionHelperTest: BaseSelectorTest() {
     }
 
     @Test
+    fun `getFieldsFromObject should return fields from base class`() {
+        assertEquals(4, ReflectionHelper.getFieldsFromObj(PageTest).size)
+    }
+
+    @Test
     fun `getInnerClassSelectors should return null`() {
         assertTrue(
             ReflectionHelper.getInnerClassSelectors
                 (PageTest.Menu.MenuItem).isEmpty())
     }
-
 
     @Test
     fun `getInnerClassSelectors should return nul l`() {
